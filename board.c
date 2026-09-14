@@ -16,23 +16,11 @@ Stone *makeStone(char c, Vec2i cpos, Vec2i bpos, WINDOW *win, Board (*board)[BX]
   addtogroup(board, stone);
   return stone;
 }
-/*
- * ok so basically, wen you add a stone, check if its cardinal adjacent to a same colored group
- * if it is, add that stone to that group
- * else, it becomes its own group
- *
- * POSSIBLY MAKE A GROUP DYNAMIC MEMORY???????????
- */
-void addtogroup(Board (*board)[BX], Stone* stone){
-  // have to make only join color it belongs to
-  if (board[stone->bpos.y][stone->bpos.x-1].stone != NULL && board[stone->bpos.y][stone->bpos.x-1].stone->group != NULL) stone->group = board[stone->bpos.y][stone->bpos.x-1].stone->group;
-  else if (board[stone->bpos.y][stone->bpos.x+1].stone != NULL && board[stone->bpos.y][stone->bpos.x+1].stone->group != NULL) stone->group = board[stone->bpos.y][stone->bpos.x+1].stone->group;
-  else if (board[stone->bpos.y-1][stone->bpos.x].stone != NULL && board[stone->bpos.y-1][stone->bpos.x].stone->group != NULL) stone->group = board[stone->bpos.y-1][stone->bpos.x].stone->group;
-  else if (board[stone->bpos.y+1][stone->bpos.x].stone != NULL && board[stone->bpos.y+1][stone->bpos.x].stone->group != NULL) stone->group = board[stone->bpos.y+1][stone->bpos.x].stone->group;
-
-  // have to make it make the liberties combined and shared among all groups members
-
-  // what if there's two or more valid groups to join
+void placeStone(Board *tile, Stone *stone, WINDOW *win) {
+  tile->stone = stone;
+  tile->c = stone->c;
+  //        mvwaddch(win, stone->pos.y, stone->pos.x, tile->stone->c);
+  //        wmove(win, stone->pos.y, stone->pos.x);
 }
 void findDead(WINDOW *win, Board (*board)[BX]) {
   // THERE'S PROBABLY AN ALGORITHM TO BE FOUND
@@ -60,11 +48,4 @@ void removeStones(WINDOW *win, Board (*board)[BX]) {
       }
     }
   }
-}
-
-void placeStone(Board *tile, Stone *stone, WINDOW *win) {
-  tile->stone = stone;
-  tile->c = stone->c;
-  //        mvwaddch(win, stone->pos.y, stone->pos.x, tile->stone->c);
-  //        wmove(win, stone->pos.y, stone->pos.x);
 }

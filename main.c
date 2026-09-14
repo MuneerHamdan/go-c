@@ -108,7 +108,7 @@ int main(void) {
 
     //update stuff
     updateLiberties(win, board);
-    findDead(win, board);
+//    findDead(win, board);
 
     //render
     clear();

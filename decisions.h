@@ -11,6 +11,7 @@
 */
 int getLiberties(WINDOW* win, Board (*board)[BX], Stone* stone);
 void updateLiberties(WINDOW* win, Board (*board)[BX]);
+void addtogroup(Board (*board)[BX], Stone* stone);
 //int atari();
 
 #endif
