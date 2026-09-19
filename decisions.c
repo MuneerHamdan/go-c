@@ -2,7 +2,16 @@
 #include "main.h"
 #include "board.h"
 
-int getLiberties(WINDOW* win, Board (*board)[BX], Stone* stone) {
+void updateGroupLiberties(Board (*board)[BX], Stone* group) {
+  for (int i = 0; i < BY; i++) {
+    for (int j = 0; j < BX; j++) {
+      if (board[i][j].stone != NULL && board[i][j].stone->group != NULL && board[i][j].stone->group == group) {
+        group->liberties++;
+      }
+    }
+  }
+}
+int getLiberties(Board (*board)[BX], Stone* stone) {
   stone->liberties = 4;
   if (board[stone->bpos.y][stone->bpos.x-1].stone != NULL) stone->liberties--;
   if (board[stone->bpos.y][stone->bpos.x+1].stone != NULL) stone->liberties--;
@@ -11,18 +20,32 @@ int getLiberties(WINDOW* win, Board (*board)[BX], Stone* stone) {
 
   if (stone->bpos.y == 0 || stone->bpos.y == BY) stone->liberties--;
   if (stone->bpos.x == 0 || stone->bpos.x == BX) stone->liberties--;
+  updateGroupLiberties(board, stone);
   return stone->liberties;
 }
-void updateLiberties(WINDOW* win, Board (*board)[BX]) {
+void updateLiberties(Board (*board)[BX]) {
   for (int i = 0; i < BY; i++) {
     for (int j = 0; j < BX; j++) {
-      if (board[i][j].stone != NULL)
-        board[i][j].stone->liberties = getLiberties(win, board, board[i][j].stone);
+      Stone* stone = board[i][j].stone;
+      if (board[i][j].stone != NULL){
+        (board[i-1][j].stone != NULL && board[i-1][j].stone->c == stone->c) ? stone->up = board[i-1][j].stone : NULL;
+        (board[i+1][j].stone != NULL && board[i+1][j].stone->c == stone->c) ? stone->down = board[i+1][j].stone : NULL;
+        (board[i][j-1].stone != NULL && board[i][j-1].stone->c == stone->c) ? stone->left = board[i][j-1].stone : NULL;
+        (board[i][j+1].stone != NULL && board[i][j+1].stone->c == stone->c) ? stone->right = board[i][j+1].stone : NULL;
+
+        board[i][j].stone->liberties += getLiberties(board, board[i][j].stone);
+        /*
+        if (board[i][j].stone->up != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->up);
+        if (board[i][j].stone->down != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->down);
+        if (board[i][j].stone->left != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->left);
+        if (board[i][j].stone->right != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->right);
+        */
+      }
     }
   }
 }
 /*
- * ok so basically, wen you add a stone, check if its cardinal adjacent to a same colored group
+ * ok so basically, when you add a stone, check if its cardinal adjacent to a same colored group
  * if it is, add that stone to that group
  * else, it becomes its own group
  *

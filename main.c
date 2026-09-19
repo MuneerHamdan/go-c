@@ -88,18 +88,18 @@ int main(void) {
     // place piece
     else if (ch == 'f') {
       if ((turn % 2 == 0) && board[bposy][bposx].stone == NULL) {
-        Stone* stone = makeStone('O', (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, win, board);
-        placeStone(&board[bposy][bposx], stone, win);
+        Stone* stone = makeStone('O', (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, board);
+        placeStone(board, stone);
         turn++;
       }
       else if ((turn % 2 == 1) && board[bposy][bposx].stone == NULL) {
-        Stone* stone = makeStone('@', (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, win, board);
-        placeStone(&board[bposy][bposx], stone, win);
+        Stone* stone = makeStone('@', (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, board);
+        placeStone(board, stone);
         turn--;
       }
     }
     else if (ch == 'r') {
-      removeStone(win, board, bposy, bposx);
+      removeStone(board, bposy, bposx);
     }
     if (errno) {
       fprintf(stderr, "error move%d\n", errno);
@@ -107,7 +107,7 @@ int main(void) {
     }
 
     //update stuff
-    updateLiberties(win, board);
+    updateLiberties(board);
 //    findDead(win, board);
 
     //render
@@ -117,11 +117,23 @@ int main(void) {
     mvwprintw(win, 1, 0, "bpos: %d, %d", bposy, bposx);
     mvwprintw(win, 2, 0, "turn: %c", turn ? '@' : 'O');
     mvwprintw(win, 3, 0, "stone?: %c", (board[bposy][bposx].stone != NULL) ? 'y' : 'n');
-    mvwprintw(win, 4, 0, "liberties: %d", (board[bposy][bposx].stone != NULL) ? getLiberties(win, board, board[bposy][bposx].stone) : 0);
+    mvwprintw(win, 4, 0, "liberties: %d", (board[bposy][bposx].stone != NULL) ? getLiberties(board, board[bposy][bposx].stone) : 0);
     mvwprintw(win, 5, 0, "stone->cpos.y: %d, stone->cpos.x: %d", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->cpos.y : -1, (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->cpos.x : -1);
     mvwprintw(win, 6, 0, "stone->bpos.y: %d, stone->bpos.x: %d", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->bpos.y : -1, (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->bpos.x : -1);
     mvwprintw(win, 7, 0, "&stone: %p", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone : NULL);
     mvwprintw(win, 8, 0, "stone->group: %p", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->group : NULL);
+
+    mvwprintw(win, 9, 0, "stone->up: %p", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->up : NULL);
+    mvwprintw(win, 10, 0, "stone->down: %p", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->down : NULL);
+    mvwprintw(win, 11, 0, "stone->left: %p", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->left : NULL);
+    mvwprintw(win, 12, 0, "stone->right: %p", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->right : NULL);
+
+    if (board[bposy][bposx].stone) {
+      mvwprintw(win, 13, 0, "stone->up: %d", (board[bposy][bposx].stone->up != NULL) ? board[bposy][bposx].stone->up->liberties : 0);
+      mvwprintw(win, 14, 0, "stone->down: %d", (board[bposy][bposx].stone->down != NULL) ? board[bposy][bposx].stone->down->liberties : 0);
+      mvwprintw(win, 15, 0, "stone->left: %d", (board[bposy][bposx].stone->left != NULL) ? board[bposy][bposx].stone->left->liberties : 0);
+      mvwprintw(win, 16, 0, "stone->right: %d", (board[bposy][bposx].stone->right != NULL) ? board[bposy][bposx].stone->right->liberties : 0);
+    }
 
     // quit info
     mvwprintw(win, maxy-1, 0, "press 'q' to quit");
@@ -171,7 +183,7 @@ int main(void) {
   // outside game loop
 
   //remove all stones
-  removeStones(win, board);
+  removeStones(board);
 
   endwin();
   return 0;
