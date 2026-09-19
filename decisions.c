@@ -40,6 +40,10 @@ void updateLiberties(Board (*board)[BX]) {
         if (board[i][j].stone->left != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->left);
         if (board[i][j].stone->right != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->right);
         */
+        if (board[i][j].stone->up != NULL) board[i][j].stone->up->group = stone->group;
+        if (board[i][j].stone->down != NULL) board[i][j].stone->down->group = stone->group;
+        if (board[i][j].stone->left != NULL) board[i][j].stone->left->group = stone->group;
+        if (board[i][j].stone->right != NULL) board[i][j].stone->right->group = stone->group;
       }
     }
   }
@@ -53,10 +57,6 @@ void updateLiberties(Board (*board)[BX]) {
  */
 void addtogroup(Board (*board)[BX], Stone* stone){
   // have to make only join color it belongs to
-  if (board[stone->bpos.y][stone->bpos.x-1].stone != NULL && board[stone->bpos.y][stone->bpos.x-1].stone->group != NULL && board[stone->bpos.y][stone->bpos.x-1].stone->c == stone->c) stone->group = board[stone->bpos.y][stone->bpos.x-1].stone->group;
-  else if (board[stone->bpos.y][stone->bpos.x+1].stone != NULL && board[stone->bpos.y][stone->bpos.x+1].stone->group != NULL && board[stone->bpos.y][stone->bpos.x+1].stone->c == stone->c) stone->group = board[stone->bpos.y][stone->bpos.x+1].stone->group;
-  else if (board[stone->bpos.y-1][stone->bpos.x].stone != NULL && board[stone->bpos.y-1][stone->bpos.x].stone->group != NULL && board[stone->bpos.y-1][stone->bpos.x].stone->c == stone->c) stone->group = board[stone->bpos.y-1][stone->bpos.x].stone->group;
-  else if (board[stone->bpos.y+1][stone->bpos.x].stone != NULL && board[stone->bpos.y+1][stone->bpos.x].stone->group != NULL && board[stone->bpos.y+1][stone->bpos.x].stone->c == stone->c) stone->group = board[stone->bpos.y+1][stone->bpos.x].stone->group;
 
   // have to make it make the liberties combined and shared among all groups members
 

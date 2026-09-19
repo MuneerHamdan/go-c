@@ -22,7 +22,7 @@ typedef struct Stone {
   Vec2i bpos;
   int liberties;
 
-  struct Stone* group;
+  struct Group* group;
   struct Stone* up;
   struct Stone* left;
   struct Stone* right;
@@ -30,18 +30,22 @@ typedef struct Stone {
 } Stone;
 
 typedef struct Group {
+  Stone* head;
 } Group;
 
 typedef struct Board {
   char c;
   Stone* stone;
+  Group* group;
 } Board;
 
-Stone *makeStone(char c, Vec2i cpos, Vec2i bpos, Board (*board)[BX]);
-Group* makeGroup();
-void placeStone(Board (*board)[BX], Stone *stone);
+Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, Board (*board)[BX]);
+void makeGroup(Board (*board)[BX], Stone* stone);
+void placeStone(Board (*board)[BX], Stone* stone);
 void findDead(Board (*board)[BX]);
 void removeStone(Board (*board)[BX], int bposy, int bposx);
 void removeStones(Board (*board)[BX]);
+void removeGroup(Board (*board)[BX], int bposy, int bposx);
+void removeGroups(Board (*board)[BX]);
 
 #endif

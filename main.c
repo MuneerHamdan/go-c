@@ -37,6 +37,7 @@ int main(void) {
     for (int j = 0; j < BX; j++) {
       _board[i][j].c = '+';
       _board[i][j].stone = NULL;
+      _board[i][j].group = NULL;
     }
   }
 
@@ -45,6 +46,7 @@ int main(void) {
     for (int j = 0; j < BX; j++) {
       board[i][j].c = '+';
       board[i][j].stone = NULL;
+      board[i][j].group = NULL;
     }
   }
 
@@ -86,17 +88,19 @@ int main(void) {
       bposx++;
     }
     // place piece
-    else if (ch == 'f') {
-      if ((turn % 2 == 0) && board[bposy][bposx].stone == NULL) {
-        Stone* stone = makeStone('O', (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, board);
-        placeStone(board, stone);
+    else if (ch == 'f' && board[bposy][bposx].stone == NULL) {
+      char tmp = '\0';
+      if (turn % 2 == 0) {
+        tmp = 'O';
         turn++;
       }
-      else if ((turn % 2 == 1) && board[bposy][bposx].stone == NULL) {
-        Stone* stone = makeStone('@', (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, board);
-        placeStone(board, stone);
+      else {
+        tmp = '@';
         turn--;
       }
+      Stone* stone = makeStone(tmp, (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, board);
+      placeStone(board, stone);
+      makeGroup(board, stone);
     }
     else if (ch == 'r') {
       removeStone(board, bposy, bposx);
@@ -133,6 +137,14 @@ int main(void) {
       mvwprintw(win, 14, 0, "stone->down: %d", (board[bposy][bposx].stone->down != NULL) ? board[bposy][bposx].stone->down->liberties : 0);
       mvwprintw(win, 15, 0, "stone->left: %d", (board[bposy][bposx].stone->left != NULL) ? board[bposy][bposx].stone->left->liberties : 0);
       mvwprintw(win, 16, 0, "stone->right: %d", (board[bposy][bposx].stone->right != NULL) ? board[bposy][bposx].stone->right->liberties : 0);
+    }
+
+    if (board[bposy][bposx].group) {
+      mvwprintw(win, 18, 0, "&group: %p", board[bposy][bposx].group);
+//      mvwprintw(win, 19, 0, "&group: %d", (board[bposy][bposx].group != NULL) ? board[bposy][bposx].group : 0);
+//      mvwprintw(win, 20, 0, "&group: %d", (board[bposy][bposx].group != NULL) ? board[bposy][bposx].group : 0);
+//      mvwprintw(win, 21, 0, "&group: %d", (board[bposy][bposx].group != NULL) ? board[bposy][bposx].group : 0);
+//      mvwprintw(win, 22, 0, "&group: %d", (board[bposy][bposx].group != NULL) ? board[bposy][bposx].group : 0);
     }
 
     // quit info
@@ -184,6 +196,7 @@ int main(void) {
 
   //remove all stones
   removeStones(board);
+  removeGroups(board);
 
   endwin();
   return 0;
