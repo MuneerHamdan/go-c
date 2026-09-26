@@ -1,4 +1,5 @@
 #include "board.h"
+#include "decisions.h"
 /*
  * 1. group is new
  * 2. group is not new
@@ -23,18 +24,21 @@ Group* addGroup(Group* groups, Group* group){
   gptr->next = group;
   return gptr;
 }
-Group* updateGroupLiberties(Group* group){
+Group* updateGroupLiberties(Group* group, Board (*board)[BX]){
   Stone* ptr = group->stonehead;
+  group->liberties = 0;
   while (ptr != NULL){
-    ptr->group->liberties += ptr->liberties;
+    getLiberties(board, ptr);
+    updateLiberties(board);
+    group->liberties += ptr->liberties;
     ptr = ptr->next;
   }
   return group;
 }
-void updateGroups(Group* groups){
+void updateGroups(Group* groups, Board (*board)[BX]){
   Group* gptr = groups;
   while (gptr != NULL){
-    gptr->liberties = updateGroupLiberties(gptr)->liberties;
+    gptr->liberties = updateGroupLiberties(gptr, board)->liberties;
     gptr = gptr->next;
   }
 }

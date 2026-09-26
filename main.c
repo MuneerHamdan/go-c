@@ -109,8 +109,8 @@ int main(void) {
       if (groups == NULL) groups = group;
       updateLiberties(board);
       if (group) addGroup(groups, group);
-      updateGroupLiberties(group);
-      updateGroups(groups);
+      updateGroupLiberties(group, board);
+      updateGroups(groups, board);
     }
     else if (ch == 'r') {
       removeStone(board, bposy, bposx);
@@ -122,7 +122,7 @@ int main(void) {
 
     //update stuff
     updateLiberties(board);
-//    updateGroups(groups);
+    updateGroups(groups, board);
 //    findDead(win, board);
 
     //render
@@ -152,7 +152,7 @@ int main(void) {
 
     if (board[bposy][bposx].group) {
       mvwprintw(win, 18, 0, "&group: %p", board[bposy][bposx].group);
-      mvwprintw(win, 19, 0, "group->head: %p", (board[bposy][bposx].group->head) ? board[bposy][bposx].group->head : NULL);
+      mvwprintw(win, 19, 0, "group->stonehead: %p", (board[bposy][bposx].group->stonehead) ? board[bposy][bposx].group->stonehead : NULL);
       if (board[bposy][bposx].group->head) {
       mvwprintw(win, 20, 0, "group->head->next: %p", (board[bposy][bposx].group->head->next) ? (board[bposy][bposx].group->head->next) : NULL);
       }

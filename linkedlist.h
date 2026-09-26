@@ -4,8 +4,8 @@
 #include "board.h"
 
 void addtolinkedlist(Stone* stone, Stone* prev);
-Group* updateGroupLiberties(Group* group);
-void updateGroups(Group* groups);
+Group* updateGroupLiberties(Group* group, Board (*board)[BX]);
+void updateGroups(Group* groups, Board (*board)[BX]);
 
 #endif
 
