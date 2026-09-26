@@ -4,6 +4,7 @@
 #include "main.h"
 #include "board.h"
 #include "decisions.h"
+#include "linkedlist.h"
 
 // make it so that CTRL+C does not cause unfinished (no freeing of memory) end of program
 void handle_sigint(int sig) {}
@@ -49,6 +50,10 @@ int main(void) {
       board[i][j].group = NULL;
     }
   }
+
+  Group* groups = NULL;
+//  groups->next = NULL;
+ // groups->head = NULL;
 
   char ch = '\0';
   int maxy, maxx = 0;
@@ -99,8 +104,13 @@ int main(void) {
         turn--;
       }
       Stone* stone = makeStone(tmp, (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, board);
-      placeStone(board, stone);
-      makeGroup(board, stone);
+      if (stone) placeStone(board, stone);
+      Group* group = addtogroup(board, stone);
+      if (groups == NULL) groups = group;
+      updateLiberties(board);
+      if (group) addGroup(groups, group);
+      updateGroupLiberties(group);
+      updateGroups(groups);
     }
     else if (ch == 'r') {
       removeStone(board, bposy, bposx);
@@ -112,6 +122,7 @@ int main(void) {
 
     //update stuff
     updateLiberties(board);
+//    updateGroups(groups);
 //    findDead(win, board);
 
     //render
@@ -141,11 +152,14 @@ int main(void) {
 
     if (board[bposy][bposx].group) {
       mvwprintw(win, 18, 0, "&group: %p", board[bposy][bposx].group);
-//      mvwprintw(win, 19, 0, "&group: %d", (board[bposy][bposx].group != NULL) ? board[bposy][bposx].group : 0);
-//      mvwprintw(win, 20, 0, "&group: %d", (board[bposy][bposx].group != NULL) ? board[bposy][bposx].group : 0);
-//      mvwprintw(win, 21, 0, "&group: %d", (board[bposy][bposx].group != NULL) ? board[bposy][bposx].group : 0);
-//      mvwprintw(win, 22, 0, "&group: %d", (board[bposy][bposx].group != NULL) ? board[bposy][bposx].group : 0);
+      mvwprintw(win, 19, 0, "group->head: %p", (board[bposy][bposx].group->head) ? board[bposy][bposx].group->head : NULL);
+      if (board[bposy][bposx].group->head) {
+      mvwprintw(win, 20, 0, "group->head->next: %p", (board[bposy][bposx].group->head->next) ? (board[bposy][bposx].group->head->next) : NULL);
+      }
+      mvwprintw(win, 21, 0, "group->liberties: %d", board[bposy][bposx].group->liberties);
     }
+    mvwprintw(win, 22, 0, "stone->next: %p", (board[bposy][bposx].stone && board[bposy][bposx].stone->next) ? (board[bposy][bposx].stone->next) : NULL);
+    
 
     // quit info
     mvwprintw(win, maxy-1, 0, "press 'q' to quit");

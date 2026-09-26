@@ -12,32 +12,24 @@ Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, Board (*board)[BX]) {
   stone->bpos.y = bpos.y;
   stone->bpos.x = bpos.x;
   stone->liberties = getLiberties(board, stone);
+  stone->group = NULL;
   return stone;
 }
-void makeGroup(Board (*board)[BX], Stone* stone){
-  if (board[stone->bpos.y][stone->bpos.x-1].stone != NULL && board[stone->bpos.y][stone->bpos.x-1].stone->group != NULL && board[stone->bpos.y][stone->bpos.x-1].stone->c == stone->c){
-    board[stone->bpos.y][stone->bpos.x].group = board[stone->bpos.y][stone->bpos.x-1].stone->group;
-    stone->group = board[stone->bpos.y][stone->bpos.x].group;
-  }
-  else if (board[stone->bpos.y][stone->bpos.x+1].stone != NULL && board[stone->bpos.y][stone->bpos.x+1].stone->group != NULL && board[stone->bpos.y][stone->bpos.x+1].stone->c == stone->c){
-    board[stone->bpos.y][stone->bpos.x].group = board[stone->bpos.y][stone->bpos.x+1].stone->group;
-    stone->group = board[stone->bpos.y][stone->bpos.x].group;
-  }
-  else if (board[stone->bpos.y-1][stone->bpos.x].stone != NULL && board[stone->bpos.y-1][stone->bpos.x].stone->group != NULL && board[stone->bpos.y-1][stone->bpos.x].stone->c == stone->c) {
-    board[stone->bpos.y][stone->bpos.x].group = board[stone->bpos.y-1][stone->bpos.x].stone->group;
-    stone->group = board[stone->bpos.y][stone->bpos.x].group;
-  }
-  else if (board[stone->bpos.y+1][stone->bpos.x].stone != NULL && board[stone->bpos.y+1][stone->bpos.x].stone->group != NULL && board[stone->bpos.y+1][stone->bpos.x].stone->c == stone->c) {
-    board[stone->bpos.y][stone->bpos.x].group = board[stone->bpos.y+1][stone->bpos.x].stone->group;
-    stone->group = board[stone->bpos.y][stone->bpos.x].group;
-  }
-  else{
+
+Group* makeGroup(Board (*board)[BX], Stone* stone){
+  if (stone->group == NULL) {
     Group* group = (Group*)malloc(sizeof(Group));
     board[stone->bpos.y][stone->bpos.x].group = group;
-    group->head = board[stone->bpos.y][stone->bpos.x].stone;
+    group->stonehead = stone;
     stone->group = group;
+    group->next = NULL;
+    group->head = NULL;
+
+    return group;
   }
+  return NULL;
 }
+
 void placeStone(Board (*board)[BX], Stone *stone) {
   int y = stone->bpos.y, x = stone->bpos.x;
   board[y][x].stone = stone;

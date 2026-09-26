@@ -1,16 +1,27 @@
 #include <ncurses.h>
 #include "main.h"
 #include "board.h"
+#include "linkedlist.h"
 
+
+/*
+ * prob too complicated
+ * 
+ * can prob just calculate the linked list liberties on addtolinkedlist
 void updateGroupLiberties(Board (*board)[BX], Stone* group) {
+  Group* groups[10] = {0};
   for (int i = 0; i < BY; i++) {
     for (int j = 0; j < BX; j++) {
-      if (board[i][j].stone != NULL && board[i][j].stone->group != NULL && board[i][j].stone->group == group) {
-        group->liberties++;
+      for (int k = 0; k < 10; k++) {
+        if (board[i][j].group != groups[k]) {
+          groups[k] = board[i][j].group;
+        }
       }
     }
   }
 }
+ */
+
 int getLiberties(Board (*board)[BX], Stone* stone) {
   stone->liberties = 4;
   if (board[stone->bpos.y][stone->bpos.x-1].stone != NULL) stone->liberties--;
@@ -20,7 +31,7 @@ int getLiberties(Board (*board)[BX], Stone* stone) {
 
   if (stone->bpos.y == 0 || stone->bpos.y == BY) stone->liberties--;
   if (stone->bpos.x == 0 || stone->bpos.x == BX) stone->liberties--;
-  updateGroupLiberties(board, stone);
+  //updateGroupLiberties(board, stone);
   return stone->liberties;
 }
 void updateLiberties(Board (*board)[BX]) {
@@ -33,7 +44,7 @@ void updateLiberties(Board (*board)[BX]) {
         (board[i][j-1].stone != NULL && board[i][j-1].stone->c == stone->c) ? stone->left = board[i][j-1].stone : NULL;
         (board[i][j+1].stone != NULL && board[i][j+1].stone->c == stone->c) ? stone->right = board[i][j+1].stone : NULL;
 
-        board[i][j].stone->liberties += getLiberties(board, board[i][j].stone);
+//        board[i][j].stone->liberties += getLiberties(board, board[i][j].stone);
         /*
         if (board[i][j].stone->up != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->up);
         if (board[i][j].stone->down != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->down);
@@ -55,10 +66,33 @@ void updateLiberties(Board (*board)[BX]) {
  *
  * POSSIBLY MAKE A GROUP DYNAMIC MEMORY???????????
  */
-void addtogroup(Board (*board)[BX], Stone* stone){
-  // have to make only join color it belongs to
-
-  // have to make it make the liberties combined and shared among all groups members
-
-  // what if there's two or more valid groups to join
+Group* addtogroup(Board (*board)[BX], Stone* stone){
+  Stone* left = board[stone->bpos.y][stone->bpos.x-1].stone;
+  Stone* right = board[stone->bpos.y][stone->bpos.x+1].stone;
+  Stone* up = board[stone->bpos.y-1][stone->bpos.x].stone;
+  Stone* down = board[stone->bpos.y+1][stone->bpos.x].stone;
+  if (left != NULL && left->group != NULL && left->c == stone->c){
+    board[stone->bpos.y][stone->bpos.x].group = left->group;
+    stone->group = board[stone->bpos.y][stone->bpos.x].group;
+    addtolinkedlist(stone, left);
+  }
+  else if (right != NULL && right->group != NULL && right->c == stone->c){
+    board[stone->bpos.y][stone->bpos.x].group = right->group;
+    stone->group = board[stone->bpos.y][stone->bpos.x].group;
+    addtolinkedlist(stone, right);
+  }
+  else if (up != NULL && up->group != NULL && up->c == stone->c) {
+    board[stone->bpos.y][stone->bpos.x].group = up->group;
+    stone->group = board[stone->bpos.y][stone->bpos.x].group;
+    addtolinkedlist(stone, up);
+  }
+  else if (down != NULL && down->group != NULL && down->c == stone->c) {
+    board[stone->bpos.y][stone->bpos.x].group = down->group;
+    stone->group = board[stone->bpos.y][stone->bpos.x].group;
+    addtolinkedlist(stone, down);
+  }
+  else {
+    stone->group = makeGroup(board, stone);
+  }
+  return stone->group;
 }

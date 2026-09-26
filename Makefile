@@ -1,3 +1,3 @@
 all:
-	gcc main.c board.c decisions.c -lncurses -g
+	gcc -g -O0 -Wall -Wextra -Wpedantic main.c board.c decisions.c linkedlist.c -lncurses
 	./a.out

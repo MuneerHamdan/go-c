@@ -15,7 +15,6 @@
 #define BY 19
 #define BX 19
 */
-
 typedef struct Stone {
   char c;
   Vec2i cpos;
@@ -23,6 +22,8 @@ typedef struct Stone {
   int liberties;
 
   struct Group* group;
+  struct Stone* next;
+
   struct Stone* up;
   struct Stone* left;
   struct Stone* right;
@@ -30,7 +31,10 @@ typedef struct Stone {
 } Stone;
 
 typedef struct Group {
-  Stone* head;
+  Stone* stonehead;
+  int liberties;
+  struct Group* next;
+  struct Group* head;
 } Group;
 
 typedef struct Board {
@@ -40,7 +44,9 @@ typedef struct Board {
 } Board;
 
 Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, Board (*board)[BX]);
-void makeGroup(Board (*board)[BX], Stone* stone);
+Group* addGroup(Group* groups, Group* group);
+Group* findGroup(Board (*board)[BX], Stone* stone);
+Group* makeGroup(Board (*board)[BX], Stone* stone);
 void placeStone(Board (*board)[BX], Stone* stone);
 void findDead(Board (*board)[BX]);
 void removeStone(Board (*board)[BX], int bposy, int bposx);

@@ -6,6 +6,5 @@ typedef struct {
 } Vec2i;
 
 int main(void);
-void addtolinkedlist();
 
 #endif
