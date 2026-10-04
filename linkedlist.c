@@ -16,11 +16,11 @@ void addtolinkedlist(Stone* stone, Stone* prev){
 
 Group* addGroup(Group* groups, Group* group){
   Group* gptr = groups;
+  if (!gptr)
+    return gptr;
   while (gptr->next != NULL){
     gptr = gptr->next;
   }
-  if (gptr == groups)
-    return groups;
   gptr->next = group;
   return gptr;
 }
@@ -29,7 +29,7 @@ Group* updateGroupLiberties(Group* group, Board (*board)[BX]){
   group->liberties = 0;
   while (ptr != NULL){
     getLiberties(board, ptr);
-    updateLiberties(board);
+//    updateLiberties(board);
     group->liberties += ptr->liberties;
     ptr = ptr->next;
   }

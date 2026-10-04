@@ -35,6 +35,7 @@ int getLiberties(Board (*board)[BX], Stone* stone) {
   return stone->liberties;
 }
 void updateLiberties(Board (*board)[BX]) {
+        /*
   for (int i = 0; i < BY; i++) {
     for (int j = 0; j < BX; j++) {
       Stone* stone = board[i][j].stone;
@@ -45,12 +46,10 @@ void updateLiberties(Board (*board)[BX]) {
         (board[i][j+1].stone != NULL && board[i][j+1].stone->c == stone->c) ? stone->right = board[i][j+1].stone : NULL;
 
 //        board[i][j].stone->liberties += getLiberties(board, board[i][j].stone);
-        /*
         if (board[i][j].stone->up != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->up);
         if (board[i][j].stone->down != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->down);
         if (board[i][j].stone->left != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->left);
         if (board[i][j].stone->right != NULL) board[i][j].stone->liberties += getLiberties(board, board[i][j].stone->right);
-        */
         if (board[i][j].stone->up != NULL) board[i][j].stone->up->group = stone->group;
         if (board[i][j].stone->down != NULL) board[i][j].stone->down->group = stone->group;
         if (board[i][j].stone->left != NULL) board[i][j].stone->left->group = stone->group;
@@ -58,6 +57,7 @@ void updateLiberties(Board (*board)[BX]) {
       }
     }
   }
+        */
 }
 /*
  * ok so basically, when you add a stone, check if its cardinal adjacent to a same colored group
@@ -66,7 +66,7 @@ void updateLiberties(Board (*board)[BX]) {
  *
  * POSSIBLY MAKE A GROUP DYNAMIC MEMORY???????????
  */
-Group* addtogroup(Board (*board)[BX], Stone* stone){
+Group* addtogroup(Board (*board)[BX], Stone* stone, Group* groups){
   Stone* left = board[stone->bpos.y][stone->bpos.x-1].stone;
   Stone* right = board[stone->bpos.y][stone->bpos.x+1].stone;
   Stone* up = board[stone->bpos.y-1][stone->bpos.x].stone;
@@ -93,6 +93,8 @@ Group* addtogroup(Board (*board)[BX], Stone* stone){
   }
   else {
     stone->group = makeGroup(board, stone);
+    if (stone->group)
+      addGroup(groups, stone->group);
   }
   return stone->group;
 }
