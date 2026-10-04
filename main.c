@@ -103,7 +103,7 @@ int main(void) {
         tmp = '@';
         turn--;
       }
-      Stone* stone = makeStone(tmp, (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx}, board);
+      Stone* stone = makeStone(tmp, (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx});
       if (stone)
         placeStone(board, stone);
       Group* group = addtogroup(board, stone, groups);
@@ -112,7 +112,9 @@ int main(void) {
       updateGroups(groups, board);
     }
     else if (ch == 'r') {
-      removeStone(board, bposy, bposx);
+//      removeGroup(board, bposy, bposx);
+      board[bposy][bposx].group = removeGroup(board, groups, board[bposy][bposx].group);
+      board[bposy][bposx].stone = removeStone(board, bposy, bposx);
     }
     if (errno) {
       fprintf(stderr, "error move%d\n", errno);
@@ -211,7 +213,7 @@ int main(void) {
 
   //remove all stones
   removeStones(board);
-  removeGroups(board);
+  removeGroups(groups);
 
   endwin();
   return 0;

@@ -1,10 +1,9 @@
 #include "board.h"
-#include "decisions.h"
 #include "main.h"
 #include <ncurses.h>
 #include <stdlib.h>
 
-Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, Board (*board)[BX]) {
+Stone* makeStone(char c, Vec2i cpos, Vec2i bpos) {
   Stone* stone = (Stone *)malloc(sizeof(Stone));
   stone->c = c;
   stone->checked = FALSE;
@@ -12,7 +11,7 @@ Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, Board (*board)[BX]) {
   stone->cpos.x = cpos.x;
   stone->bpos.y = bpos.y;
   stone->bpos.x = bpos.x;
-  stone->liberties = getLiberties(board, stone);
+  stone->liberties = 0;
   stone->group = NULL;
   return stone;
 }
@@ -53,10 +52,11 @@ void findDead(Board (*board)[BX]) {
   }
 }
 */
-void removeStone(Board (*board)[BX], int bposy, int bposx) {
+Stone* removeStone(Board (*board)[BX], int bposy, int bposx) {
   free(board[bposy][bposx].stone);
   board[bposy][bposx].stone = NULL;
   board[bposy][bposx].c = '\0';
+  return board[bposy][bposx].stone;
 }
 void removeStones(Board (*board)[BX]) {
   for (int i = 0; i < BY; i++) {
@@ -69,10 +69,52 @@ void removeStones(Board (*board)[BX]) {
     }
   }
 }
-void removeGroup(Board (*board)[BX], int bposy, int bposx){
-  free(board[bposy][bposx].group);
-  board[bposy][bposx].group = NULL;
+Group* removeStonesGroup(Board (*board)[BX], Group* group){
+  Stone* ptr = group->stonehead;
+  Stone* tmp = ptr;
+  while (ptr->next){
+    tmp = ptr->next;
+    ptr = removeStone(board, ptr->bpos.y, ptr->bpos.x);
+    free(ptr);
+    ptr = tmp;
+  }
+  if (tmp){
+    tmp = removeStone(board, ptr->bpos.y, ptr->bpos.x);
+    free(tmp);
+  }
+  ptr = NULL;
+  tmp = NULL;
+  group->stonehead = NULL;
+  return group;
 }
+Group* removeGroup(Board (*board)[BX], Group* groups, Group* group){
+  group = removeStonesGroup(board, group);
+  Group* gptr = groups;
+  while (gptr->next && gptr->next != group){
+    gptr = gptr->next;
+  }
+  if (group->next == NULL){
+    gptr->next = NULL;
+  }
+  if (gptr->next == group && gptr->next->next != NULL){
+    gptr->next = gptr->next->next;
+  }
+
+  free(group);
+  group = NULL;
+  return group;
+}
+void removeGroups(Group* groups){
+  Group* gptr = groups;
+  Group* tmp = groups;
+  while (gptr->next){
+    if (gptr->next)
+      tmp = gptr->next;
+    free(gptr);
+    gptr = tmp;
+  }
+}
+/*
 void removeGroups(Board (*board)[BX]) {
   for (int i = 0; i < BY; i++) {
     for (int j = 0; j < BX; j++) {
@@ -84,3 +126,4 @@ void removeGroups(Board (*board)[BX]) {
     }
   }
 }
+*/

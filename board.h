@@ -46,15 +46,16 @@ typedef struct Board {
   Group* group;
 } Board;
 
-Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, Board (*board)[BX]);
+Stone* makeStone(char c, Vec2i cpos, Vec2i bpos);
 Group* addGroup(Group* groups, Group* group);
 Group* findGroup(Board (*board)[BX], Stone* stone);
 Group* makeGroup(Board (*board)[BX], Stone* stone);
 void placeStone(Board (*board)[BX], Stone* stone);
 void findDead(Board (*board)[BX]);
-void removeStone(Board (*board)[BX], int bposy, int bposx);
+Stone* removeStone(Board (*board)[BX], int bposy, int bposx);
 void removeStones(Board (*board)[BX]);
-void removeGroup(Board (*board)[BX], int bposy, int bposx);
-void removeGroups(Board (*board)[BX]);
+Group* removeStonesGroup(Board (*board)[BX], Group* group);
+void removeGroups(Group* groups);
+Group* removeGroup(Board (*board)[BX], Group* groups, Group* group);
 
 #endif

@@ -21,7 +21,8 @@ Group* addGroup(Group* groups, Group* group){
   while (gptr->next != NULL){
     gptr = gptr->next;
   }
-  gptr->next = group;
+  if (gptr != group)
+    gptr->next = group;
   return gptr;
 }
 Group* updateGroupLiberties(Group* group, Board (*board)[BX]){
@@ -50,6 +51,11 @@ void updateGroups(Group* groups, Board (*board)[BX]){
   Group* gptr = groups;
   while (gptr != NULL){
     gptr->liberties = updateGroupLiberties(gptr, board)->liberties;
+    if (!gptr->liberties){
+      if (gptr->next){
+        Group* tmp = gptr->next;
+      }
+    }
     gptr = gptr->next;
   }
 }
