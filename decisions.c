@@ -34,8 +34,8 @@ int getLiberties(Board (*board)[BX], Stone* stone) {
   //updateGroupLiberties(board, stone);
   return stone->liberties;
 }
-void updateLiberties(Board (*board)[BX]) {
         /*
+void updateLiberties(Board (*board)[BX]) {
   for (int i = 0; i < BY; i++) {
     for (int j = 0; j < BX; j++) {
       Stone* stone = board[i][j].stone;
@@ -57,8 +57,8 @@ void updateLiberties(Board (*board)[BX]) {
       }
     }
   }
-        */
 }
+        */
 /*
  * ok so basically, when you add a stone, check if its cardinal adjacent to a same colored group
  * if it is, add that stone to that group

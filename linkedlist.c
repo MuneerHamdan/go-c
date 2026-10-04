@@ -31,6 +31,17 @@ Group* updateGroupLiberties(Group* group, Board (*board)[BX]){
     getLiberties(board, ptr);
 //    updateLiberties(board);
     group->liberties += ptr->liberties;
+    /*
+    if (board[ptr->bpos.y-1][ptr->bpos.x].group == ptr->group && board[ptr->bpos.y-1][ptr->bpos.x].stone->checked == FALSE)
+      group->liberties--;
+    else if (board[ptr->bpos.y+1][ptr->bpos.x].group == ptr->group && board[ptr->bpos.y+1][ptr->bpos.x].stone->checked == FALSE)
+      group->liberties--;
+    else if (board[ptr->bpos.y][ptr->bpos.x-1].group == ptr->group && board[ptr->bpos.y][ptr->bpos.x-1].stone->checked == FALSE)
+      group->liberties--;
+    else if (board[ptr->bpos.y][ptr->bpos.x+1].group == ptr->group && board[ptr->bpos.y][ptr->bpos.x+1].stone->checked == FALSE)
+      group->liberties--;
+    ptr->checked = TRUE;
+    */
     ptr = ptr->next;
   }
   return group;

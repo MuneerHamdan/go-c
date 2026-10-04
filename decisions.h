@@ -11,7 +11,7 @@
 */
 //void updateGroupLiberties(Board (*board)[BX], Stone* group);
 int getLiberties(Board (*board)[BX], Stone* stone);
-void updateLiberties(Board (*board)[BX]);
+//void updateLiberties(Board (*board)[BX]);
 Group* addtogroup(Board (*board)[BX], Stone* stone, Group* groups);
 //int atari();
 

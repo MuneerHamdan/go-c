@@ -7,6 +7,7 @@
 Stone* makeStone(char c, Vec2i cpos, Vec2i bpos, Board (*board)[BX]) {
   Stone* stone = (Stone *)malloc(sizeof(Stone));
   stone->c = c;
+  stone->checked = FALSE;
   stone->cpos.y = cpos.y;
   stone->cpos.x = cpos.x;
   stone->bpos.y = bpos.y;
@@ -40,6 +41,7 @@ void placeStone(Board (*board)[BX], Stone *stone) {
   //board[y][x].stone->liberties += (stone->left) ? getLiberties(board, stone->left) : 0;
   //board[y][x].stone->liberties += (stone->right) ? getLiberties(board, stone->right) : 0;
 }
+/*
 void findDead(Board (*board)[BX]) {
   // THERE'S PROBABLY AN ALGORITHM TO BE FOUND
   for (int i = 0; i < BY; i++) {
@@ -50,6 +52,7 @@ void findDead(Board (*board)[BX]) {
     }
   }
 }
+*/
 void removeStone(Board (*board)[BX], int bposy, int bposx) {
   free(board[bposy][bposx].stone);
   board[bposy][bposx].stone = NULL;

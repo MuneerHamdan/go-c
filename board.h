@@ -3,6 +3,7 @@
 
 #include <ncurses.h>
 #include "main.h"
+#include <stdbool.h>
 
 // max board size
 #define BY 9
@@ -20,6 +21,8 @@ typedef struct Stone {
   Vec2i cpos;
   Vec2i bpos;
   int liberties;
+
+  bool checked;
 
   struct Group* group;
   struct Stone* next;
