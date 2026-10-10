@@ -93,7 +93,7 @@ int main(void) {
     Stone* stone = board[bposy][bposx].stone;
     Group* group = getGroup(stone);
     // place piece
-    if (ch == 'f' && board[bposy][bposx].c == '+') {
+    if (ch == 'f' && !stone) {
       char c = '\0';
       if (turn % 2 == 0) {
         c = 'O';
@@ -104,8 +104,7 @@ int main(void) {
         turn--;
       }
       stone = makeStone(board, c, (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx});
-      group = neighborGroup(board, stone, groups);
-      groups = addGroupToGroups(group, groups);
+      groups = neighborGroup(board, stone, groups);
       //updateGroups(groups, board);
     }
     else if (ch == 'r' && stone) {
@@ -131,7 +130,8 @@ int main(void) {
     mvwprintw(win, 1, 0, "bpos: %d, %d", bposy, bposx);
     mvwprintw(win, 2, 0, "turn: %c", turn ? '@' : 'O');
     mvwprintw(win, 3, 0, "stone?: %c", (stone) ? 'y' : 'n');
-//    mvwprintw(win, 4, 0, "liberties: %d", (board[bposy][bposx].stone != NULL) ? getLiberties(board, board[bposy][bposx].stone) : 0);
+    mvwprintw(win, 4, 0, "liberties: %d", (stone) ? (stone->liberties) : 0);
+    //mvwprintw(win, 4, 0, "liberties: %d", (stone) ? getLiberties(board, board[bposy][bposx].stone) : 0);
     mvwprintw(win, 5, 0, "stone->cpos.y: %d, stone->cpos.x: %d", (stone) ? stone->cpos.y : -1, (stone) ? stone->cpos.x : -1);
     mvwprintw(win, 6, 0, "stone->bpos.y: %d, stone->bpos.x: %d", (stone) ? stone->bpos.y : -1, (stone) ? stone->bpos.x : -1);
     mvwprintw(win, 7, 0, "&stone: %p", (stone) ? (void *)stone : NULL);
@@ -151,8 +151,9 @@ int main(void) {
 
 //    if (board[bposy][bposx].group) {
       mvwprintw(win, 18, 0, "&group: %p", (group) ? (void *)group : NULL);
-    mvwprintw(win, 19, 0, "group->next: %p", (group) ? (void *)(group->next) : NULL);
-      mvwprintw(win, 20, 0, "group->stonehead: %p", (group && group->stonehead) ? (void *)group->stonehead : NULL);
+    mvwprintw(win, 19, 0, "group->prev: %p", (group) ? (void *)(group->prev) : NULL);
+    mvwprintw(win, 20, 0, "group->next: %p", (group) ? (void *)(group->next) : NULL);
+      mvwprintw(win, 21, 0, "group->stonehead: %p", (group && group->stonehead) ? (void *)group->stonehead : NULL);
 //      if (board[bposy][bposx].group->head) {
 
  //     mvwprintw(win, 20, 0, "groups: %p", (groups) ? (void *)groups : NULL);
@@ -215,7 +216,7 @@ int main(void) {
 
   //remove all stones
 //  removeStones(board);
- // removeGroups(groups);
+  removeGroups(board, groups);
 
   endwin();
   return 0;

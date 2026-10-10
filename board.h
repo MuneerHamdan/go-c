@@ -34,6 +34,7 @@ typedef struct Group {
 
   Stone* stonehead;
   int liberties;
+  struct Group* prev;
   struct Group* next;
   struct Group* head;
 } Group;
@@ -56,6 +57,6 @@ Stone* removeStone(Board (*board)[BX], Group* groups, Stone* stone);
 Group* removeStones(Group* group);
 
 Group* removeGroup(Board (*board)[BX], Group* groups, Vec2i bpos);
-Group* removeGroups(Group* groups);
+Group* removeGroups(Board (*board)[BX], Group* groups);
 
 #endif

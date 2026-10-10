@@ -5,9 +5,6 @@
 #include "board.h"
 #include <stdbool.h>
 
-int getStoneLiberties(Stone* stone);
-Group* addToGroup(Board (*board)[BX], Stone* stone, Group* groups);
-
-bool needGroup(Stone* stone);
+int getLiberties(Board (*board)[BX], Stone* stone);
 
 #endif
