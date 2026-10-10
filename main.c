@@ -48,6 +48,7 @@ int main(void) {
     for (int j = 0; j < BX; j++) {
       board[i][j].c = '+';
       board[i][j].stone = NULL;
+      board[i][j].group = NULL;
     }
   }
 
@@ -90,6 +91,7 @@ int main(void) {
       bposx++;
     }
     Stone* stone = board[bposy][bposx].stone;
+    Group* group = getGroup(stone);
     // place piece
     if (ch == 'f' && board[bposy][bposx].c == '+') {
       char c = '\0';
@@ -102,12 +104,13 @@ int main(void) {
         turn--;
       }
       stone = makeStone(board, c, (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx});
-      Group* group = neighborGroup(board, stone, groups);
+      group = neighborGroup(board, stone, groups);
+      groups = addGroupToGroups(group, groups);
       //updateGroups(groups, board);
     }
     else if (ch == 'r' && stone) {
       stone = removeStone(board, groups, stone);
-//      removeGroup(board, bposy, bposx);
+      group = removeGroup(board, groups, (Vec2i){bposy, bposx});
 //      board[bposy][bposx].group = removeGroup(board, groups, board[bposy][bposx].group);
  //     board[bposy][bposx].stone = removeStone(board, bposy, bposx);
     }
@@ -127,36 +130,38 @@ int main(void) {
     mvwprintw(win, 0, 0, "curs: %d, %d", cursy, cursx);
     mvwprintw(win, 1, 0, "bpos: %d, %d", bposy, bposx);
     mvwprintw(win, 2, 0, "turn: %c", turn ? '@' : 'O');
-    mvwprintw(win, 3, 0, "stone?: %c", (stone != NULL) ? 'y' : 'n');
+    mvwprintw(win, 3, 0, "stone?: %c", (stone) ? 'y' : 'n');
 //    mvwprintw(win, 4, 0, "liberties: %d", (board[bposy][bposx].stone != NULL) ? getLiberties(board, board[bposy][bposx].stone) : 0);
-//    mvwprintw(win, 5, 0, "stone->cpos.y: %d, stone->cpos.x: %d", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->cpos.y : -1, (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->cpos.x : -1);
-//    mvwprintw(win, 6, 0, "stone->bpos.y: %d, stone->bpos.x: %d", (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->bpos.y : -1, (board[bposy][bposx].stone != NULL) ? board[bposy][bposx].stone->bpos.x : -1);
-//    mvwprintw(win, 7, 0, "&stone: %p", (board[bposy][bposx].stone != NULL) ? (void *)board[bposy][bposx].stone : NULL);
-//    mvwprintw(win, 8, 0, "stone->group: %p", (board[bposy][bposx].stone != NULL) ? (void *)board[bposy][bposx].stone->group : NULL);
-//
+    mvwprintw(win, 5, 0, "stone->cpos.y: %d, stone->cpos.x: %d", (stone) ? stone->cpos.y : -1, (stone) ? stone->cpos.x : -1);
+    mvwprintw(win, 6, 0, "stone->bpos.y: %d, stone->bpos.x: %d", (stone) ? stone->bpos.y : -1, (stone) ? stone->bpos.x : -1);
+    mvwprintw(win, 7, 0, "&stone: %p", (stone) ? (void *)stone : NULL);
+    mvwprintw(win, 8, 0, "stone->group: %p", (stone && stone->group) ? (void *)stone->group : NULL);
+
 //    mvwprintw(win, 9, 0, "stone->up: %p", (board[bposy][bposx].stone != NULL) ? (void *)board[bposy][bposx].stone->up : NULL);
 //    mvwprintw(win, 10, 0, "stone->down: %p", (board[bposy][bposx].stone != NULL) ? (void *)board[bposy][bposx].stone->down : NULL);
 //    mvwprintw(win, 11, 0, "stone->left: %p", (board[bposy][bposx].stone != NULL) ? (void *)board[bposy][bposx].stone->left : NULL);
 //    mvwprintw(win, 12, 0, "stone->right: %p", (board[bposy][bposx].stone != NULL) ? (void *)board[bposy][bposx].stone->right : NULL);
-//
+
 //    if (board[bposy][bposx].stone) {
 //      mvwprintw(win, 13, 0, "stone->up: %d", (board[bposy][bposx].stone->up != NULL) ? board[bposy][bposx].stone->up->liberties : 0);
 //      mvwprintw(win, 14, 0, "stone->down: %d", (board[bposy][bposx].stone->down != NULL) ? board[bposy][bposx].stone->down->liberties : 0);
 //      mvwprintw(win, 15, 0, "stone->left: %d", (board[bposy][bposx].stone->left != NULL) ? board[bposy][bposx].stone->left->liberties : 0);
 //      mvwprintw(win, 16, 0, "stone->right: %d", (board[bposy][bposx].stone->right != NULL) ? board[bposy][bposx].stone->right->liberties : 0);
 //    }
-//
+
 //    if (board[bposy][bposx].group) {
-//      mvwprintw(win, 18, 0, "&group: %p", (void *)board[bposy][bposx].group);
-//      mvwprintw(win, 19, 0, "group->stonehead: %p", (board[bposy][bposx].group->stonehead) ? (void *)board[bposy][bposx].group->stonehead : NULL);
+      mvwprintw(win, 18, 0, "&group: %p", (group) ? (void *)group : NULL);
+    mvwprintw(win, 19, 0, "group->next: %p", (group) ? (void *)(group->next) : NULL);
+      mvwprintw(win, 20, 0, "group->stonehead: %p", (group && group->stonehead) ? (void *)group->stonehead : NULL);
 //      if (board[bposy][bposx].group->head) {
-//      mvwprintw(win, 20, 0, "group->head->next: %p", (board[bposy][bposx].group->head->next) ? (void *)(board[bposy][bposx].group->head->next) : NULL);
+
+ //     mvwprintw(win, 20, 0, "groups: %p", (groups) ? (void *)groups : NULL);
+//      mvwprintw(win, 21, 0, "groups->next: %p", (groups && groups->next) ? (void *)groups->next : NULL);
 //      }
 //      mvwprintw(win, 21, 0, "group->liberties: %d", board[bposy][bposx].group->liberties);
 //    }
 //    mvwprintw(win, 22, 0, "stone->next: %p", (board[bposy][bposx].stone && board[bposy][bposx].stone->next) ? (void *)(board[bposy][bposx].stone->next) : NULL);
 //
-//    mvwprintw(win, 24, 0, "group->next: %p", (board[bposy][bposx].group) ? (void *)(board[bposy][bposx].group->next) : NULL);
     
 
     // quit info

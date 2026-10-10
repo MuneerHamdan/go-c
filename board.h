@@ -41,19 +41,21 @@ typedef struct Group {
 typedef struct Board {
   char c;
   Stone* stone;
+  Group* group;
 } Board;
 
 Stone* makeStone(Board (*board)[BX], char c, Vec2i cpos, Vec2i bpos);
 Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups);
 //Group* addStoneToGroup(Stone* stone, Stone* stone_, Group* groups);
 
-Group* makeGroup(Stone* stone, Group* groups);
+Group* getGroup(Stone* stonehead);
+Group* makeGroup(Board (*board)[BX], Stone* stone, Group* groups);
 Group* addGroupToGroups(Group* group, Group* groups);
 
 Stone* removeStone(Board (*board)[BX], Group* groups, Stone* stone);
 Group* removeStones(Group* group);
 
-Group* removeGroup(Group* groups, Group* group);
+Group* removeGroup(Board (*board)[BX], Group* groups, Vec2i bpos);
 Group* removeGroups(Group* groups);
 
 #endif

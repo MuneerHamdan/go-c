@@ -18,15 +18,20 @@ Stone* makeStone(Board (*board)[BX], char c, Vec2i cpos, Vec2i bpos) {
   return stone;
 }
 
-Group* makeGroup(Stone* stone, Group* groups){
+Group* makeGroup(Board (*board)[BX], Stone* stone, Group* groups){
   Group* group = (Group*)malloc(sizeof(Group));
   group->stonehead = stone;
   stone->group = group;
   group->next = NULL;
   group->head = NULL;
 
-  addGroupToGroups(group, groups);
+  board[stone->bpos.y][stone->bpos.x].group = group;
+
   return group;
+}
+
+Group* getGroup(Stone* stonehead){
+  return (stonehead && stonehead->group) ? stonehead->group : NULL;
 }
 
 Group* addGroupToGroups(Group* group, Group* groups){
@@ -68,7 +73,7 @@ Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups){
     stone->group = right->group;
   }
   else{
-    stone->group = makeGroup(stone, groups);
+    stone->group = makeGroup(board, stone, groups);
   }
   return stone->group;
 }
@@ -83,7 +88,10 @@ Stone* removeStone(Board (*board)[BX], Group* groups, Stone* stone){
 Group* removeStones(Group* group){
   return NULL;
 }
-Group* removeGroup(Group* groups, Group* group){
+Group* removeGroup(Board (*board)[BX], Group* groups, Vec2i bpos){
+  free(board[bpos.y][bpos.x].group);
+  board[bpos.y][bpos.x].group = NULL;
+  //groups->group = NULL;
   return NULL;
 }
 Group* removeGroups(Group* groups){
