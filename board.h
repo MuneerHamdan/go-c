@@ -25,6 +25,7 @@ typedef struct Stone {
   bool checked;
 
   struct Group* group;
+  struct Stone* prev;
   struct Stone* next;
 } Stone;
 
@@ -47,16 +48,17 @@ typedef struct Board {
 
 Stone* makeStone(Board (*board)[BX], char c, Vec2i cpos, Vec2i bpos);
 Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups);
-//Group* addStoneToGroup(Stone* stone, Stone* stone_, Group* groups);
+Group* addStoneToGroup(Group* group, Stone* stone);
 
 Group* getGroup(Stone* stonehead);
 Group* makeGroup(Board (*board)[BX], Stone* stone, Group* groups);
 Group* addGroupToGroups(Group* group, Group* groups);
 
-Stone* removeStone(Board (*board)[BX], Group* groups, Stone* stone);
-Group* removeStones(Group* group);
+Stone* removeStone(Board (*board)[BX], Group* group, Stone* stone);
+Group* removeStones(Board (*board)[BX], Group* group);
 
 Group* removeGroup(Board (*board)[BX], Group* groups, Vec2i bpos);
+Group* removeGroupLL(Board (*board)[BX], Group* groups, Group* group);
 Group* removeGroups(Board (*board)[BX], Group* groups);
 
 #endif

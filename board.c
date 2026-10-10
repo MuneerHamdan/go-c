@@ -61,31 +61,17 @@ Group* addGroupToGroups(Group* group, Group* groups){
 }
 
 Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups){
-
-  /*
-   * is there a stone adjacent to me?
-   * if yes my group becomes that stone's group
-   * if no make a new group
-   */
-  Stone* up;
-  Stone* down;
-  Stone* left;
-  Stone* right;
-  if (stone->bpos.y-1 < 0)
-    up = NULL;
-  else
+  Stone* up = NULL;
+  Stone* down = NULL;
+  Stone* left = NULL;
+  Stone* right = NULL;
+  if (!(stone->bpos.y-1 < 0))
     up = board[stone->bpos.y-1][stone->bpos.x].stone;
-  if (stone->bpos.y+1 > BY-1)
-    down = NULL;
-  else
+  if (!(stone->bpos.y+1 > BY-1))
     down = board[stone->bpos.y+1][stone->bpos.x].stone;
-  if (stone->bpos.x-1 < 0)
-    left = NULL;
-  else
+  if (!(stone->bpos.x-1 < 0))
     left = board[stone->bpos.y][stone->bpos.x-1].stone;
-  if (stone->bpos.x+1 > BX-1)
-    right = NULL;
-  else
+  if (!(stone->bpos.x+1 > BX-1))
     right = board[stone->bpos.y][stone->bpos.x+1].stone;
 
   if (up) {
@@ -103,15 +89,19 @@ Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups){
 
   if (up && up->c == stone->c) {
     stone->group = up->group;
+    stone->prev = up;
   }
   else if (down && down->c == stone->c) {
     stone->group = down->group;
+    stone->prev = down;
   }
   else if (left && left->c == stone->c){
     stone->group = left->group;
+    stone->prev = left;
   }
   else if (right && right->c == stone->c){
     stone->group = right->group;
+    stone->prev = right;
   }
   else{
     groups = makeGroup(board, stone, groups);
@@ -120,15 +110,33 @@ Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups){
   return stone->group;
 }
 
-Stone* removeStone(Board (*board)[BX], Group* groups, Stone* stone){
+Group* addStoneToGroup(Group* group, Stone* stone){
+  Stone* ptr = group->stonehead;
+  while(ptr->next){
+    ptr = ptr->next;
+  }
+  stone->prev = ptr;
+  ptr->next = stone;
+  return group;
+}
+
+Stone* removeStone(Board (*board)[BX], Group* group, Stone* stone){
   board[stone->bpos.y][stone->bpos.x].stone = NULL;
   //groups->stone = NULL;
   free(stone);
   stone = NULL;
   return stone;
 }
-Group* removeStones(Group* group){
-  return NULL;
+Group* removeStones(Board (*board)[BX], Group* group){
+  Stone* ptr = group->stonehead;
+  while (ptr){
+    while (ptr->next){
+      ptr = removeStone(board, group, ptr);
+      ptr = ptr->next;
+    }
+  }
+  group->stonehead = NULL;
+  return group;
 }
 Group* removeGroup(Board (*board)[BX], Group* groups, Vec2i bpos){
   free(board[bpos.y][bpos.x].group);
@@ -136,15 +144,32 @@ Group* removeGroup(Board (*board)[BX], Group* groups, Vec2i bpos){
   //groups->group = NULL;
   return groups;
 }
+Group* removeGroupLL(Board (*board)[BX], Group* groups, Group* group){
+//  Group* ptr = groups;
+  board[group->stonehead->bpos.y][group->stonehead->bpos.x].group = NULL;
+  free(board[group->stonehead->bpos.y][group->stonehead->bpos.x].group);
+  group = removeStones(board, group);
+  Group* prev = group->prev;
+  if(group->next)
+    prev->next = group->next;
+  else if(prev)
+    prev->next = NULL;
+  return groups;
+}
 Group* removeGroups(Board (*board)[BX], Group* groups){
+  Group* prev = groups;
+  Group* curr = groups;
+  if (prev->next)
+    curr = groups;
   while(groups){
-    Group* ptr = groups;
-    while(ptr->next->next){
-      ptr = ptr->next;
+    if (!groups->stonehead)
+      return NULL;
+    while(curr->next){
+      curr = curr->next;
     }
-    removeStones(ptr->next);
-    groups = removeGroup(board, groups, (Vec2i){ptr->next->stonehead->bpos.y, ptr->next->stonehead->bpos.x});
-    ptr = NULL;
+    curr = removeGroupLL(board, groups, curr);
+    if (curr->prev)
+      curr = curr->prev;
   }
-  return NULL;
+  return groups;
 }

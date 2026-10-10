@@ -105,6 +105,7 @@ int main(void) {
       }
       stone = makeStone(board, c, (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx});
       groups = neighborGroup(board, stone, groups);
+      group = addStoneToGroup(groups, stone);
       //updateGroups(groups, board);
     }
     else if (ch == 'r' && stone) {
@@ -136,6 +137,8 @@ int main(void) {
     mvwprintw(win, 6, 0, "stone->bpos.y: %d, stone->bpos.x: %d", (stone) ? stone->bpos.y : -1, (stone) ? stone->bpos.x : -1);
     mvwprintw(win, 7, 0, "&stone: %p", (stone) ? (void *)stone : NULL);
     mvwprintw(win, 8, 0, "stone->group: %p", (stone && stone->group) ? (void *)stone->group : NULL);
+    mvwprintw(win, 9, 0, "stone->prev: %p", (stone && stone->prev) ? (void *)stone->prev : NULL);
+    mvwprintw(win, 10, 0, "stone->next: %p", (stone && stone->next) ? (void *)stone->next : NULL);
 
 //    mvwprintw(win, 9, 0, "stone->up: %p", (board[bposy][bposx].stone != NULL) ? (void *)board[bposy][bposx].stone->up : NULL);
 //    mvwprintw(win, 10, 0, "stone->down: %p", (board[bposy][bposx].stone != NULL) ? (void *)board[bposy][bposx].stone->down : NULL);
