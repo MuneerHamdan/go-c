@@ -3,16 +3,11 @@
 
 #include <ncurses.h>
 #include "board.h"
+#include <stdbool.h>
 
-/*
-  ok so basically do on-place-checks
+int getStoneLiberties(Stone* stone);
+Group* addToGroup(Board (*board)[BX], Stone* stone, Group* groups);
 
-  so when player places a stone, check from cursor's position's cardinal directions if there are any enemy stones. if there are add that many stones to the player's stone's liberties
-*/
-//void updateGroupLiberties(Board (*board)[BX], Stone* group);
-int getLiberties(Board (*board)[BX], Stone* stone);
-//void updateLiberties(Board (*board)[BX]);
-Group* addtogroup(Board (*board)[BX], Stone* stone, Group* groups);
-//int atari();
+bool needGroup(Stone* stone);
 
 #endif

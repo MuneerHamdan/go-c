@@ -4,4 +4,4 @@ all:
 
 g:
 	gcc -g -O0 -Wall -Wextra -Wpedantic main.c board.c decisions.c linkedlist.c -lncurses
-	gdb ./a.out
+	gdb -tui ./a.out

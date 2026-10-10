@@ -3,7 +3,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-Stone* makeStone(char c, Vec2i cpos, Vec2i bpos) {
+Stone* makeStone(Board (*board)[BX], char c, Vec2i cpos, Vec2i bpos) {
   Stone* stone = (Stone *)malloc(sizeof(Stone));
   stone->c = c;
   stone->checked = FALSE;
@@ -13,117 +13,79 @@ Stone* makeStone(char c, Vec2i cpos, Vec2i bpos) {
   stone->bpos.x = bpos.x;
   stone->liberties = 0;
   stone->group = NULL;
+
+  board[bpos.y][bpos.x].stone = stone;
   return stone;
 }
 
-Group* makeGroup(Board (*board)[BX], Stone* stone){
-  if (stone->group == NULL) {
-    Group* group = (Group*)malloc(sizeof(Group));
-    board[stone->bpos.y][stone->bpos.x].group = group;
-    group->stonehead = stone;
-    stone->group = group;
-    group->next = NULL;
-    group->head = NULL;
+Group* makeGroup(Stone* stone, Group* groups){
+  Group* group = (Group*)malloc(sizeof(Group));
+  group->stonehead = stone;
+  stone->group = group;
+  group->next = NULL;
+  group->head = NULL;
 
-    return group;
+  addGroupToGroups(group, groups);
+  return group;
+}
+
+Group* addGroupToGroups(Group* group, Group* groups){
+  Group* ptr = groups;
+  if (!groups){
+    groups = group;
+    return groups;
   }
+  while (ptr->next){
+    ptr = ptr->next;
+  }
+  if (groups != group)
+    ptr->next = group;
+  return groups;
+}
+
+Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups){
+
+  /*
+   * is there a stone adjacent to me?
+   * if yes my group becomes that stone's group
+   * if no make a new group
+   */
+  Stone* up = board[stone->bpos.y-1][stone->bpos.x].stone;
+  Stone* down = board[stone->bpos.y+1][stone->bpos.x].stone;
+  Stone* left = board[stone->bpos.y][stone->bpos.x-1].stone;
+  Stone* right = board[stone->bpos.y][stone->bpos.x+1].stone;
+
+  if (up && up->c == stone->c) {
+    stone->group = up->group;
+  }
+  else if (down && down->c == stone->c) {
+    stone->group = down->group;
+  }
+  else if (left && left->c == stone->c){
+    stone->group = left->group;
+  }
+  else if (right && right->c == stone->c){
+    stone->group = right->group;
+  }
+  else{
+    stone->group = makeGroup(stone, groups);
+  }
+  return stone->group;
+}
+
+Stone* removeStone(Board (*board)[BX], Group* groups, Stone* stone){
+  board[stone->bpos.y][stone->bpos.x].stone = NULL;
+  //groups->stone = NULL;
+  free(stone);
+  stone = NULL;
+  return stone;
+}
+Group* removeStones(Group* group){
   return NULL;
 }
-
-void placeStone(Board (*board)[BX], Stone *stone) {
-  int y = stone->bpos.y, x = stone->bpos.x;
-  board[y][x].stone = stone;
-  board[y][x].c = stone->c;
-
-  //  board[y][x].stone->liberties += (stone->up) ? getLiberties(board, stone->up) : 0;
-  // board[y][x].stone->liberties += (stone->down) ? getLiberties(board, stone->down) : 0;
-  //board[y][x].stone->liberties += (stone->left) ? getLiberties(board, stone->left) : 0;
-  //board[y][x].stone->liberties += (stone->right) ? getLiberties(board, stone->right) : 0;
+Group* removeGroup(Group* groups, Group* group){
+  return NULL;
 }
-/*
-void findDead(Board (*board)[BX]) {
-  // THERE'S PROBABLY AN ALGORITHM TO BE FOUND
-  for (int i = 0; i < BY; i++) {
-    for (int j = 0; j < BX; j++) {
-      if (board[i][j].stone != NULL && board[i][j].stone->liberties == 0) {
-        removeStone(board, i, j);
-      }
-    }
-  }
+Group* removeGroups(Group* groups){
+  return NULL;
 }
-*/
-Stone* removeStone(Board (*board)[BX], int bposy, int bposx) {
-  free(board[bposy][bposx].stone);
-  board[bposy][bposx].stone = NULL;
-  board[bposy][bposx].c = '\0';
-  return board[bposy][bposx].stone;
-}
-void removeStones(Board (*board)[BX]) {
-  for (int i = 0; i < BY; i++) {
-    for (int j = 0; j < BX; j++) {
-      if (board[i][j].stone != NULL) {
-        free(board[i][j].stone);
-        board[i][j].stone = NULL;
-        board[i][j].c = '\0';
-      }
-    }
-  }
-}
-Group* removeStonesGroup(Board (*board)[BX], Group* group){
-  Stone* ptr = group->stonehead;
-  Stone* tmp = ptr;
-  while (ptr->next){
-    tmp = ptr->next;
-    ptr = removeStone(board, ptr->bpos.y, ptr->bpos.x);
-    free(ptr);
-    ptr = tmp;
-  }
-  if (tmp){
-    tmp = removeStone(board, ptr->bpos.y, ptr->bpos.x);
-    free(tmp);
-  }
-  ptr = NULL;
-  tmp = NULL;
-  group->stonehead = NULL;
-  return group;
-}
-Group* removeGroup(Board (*board)[BX], Group* groups, Group* group){
-  group = removeStonesGroup(board, group);
-  Group* gptr = groups;
-  while (gptr->next && gptr->next != group){
-    gptr = gptr->next;
-  }
-  if (group->next == NULL){
-    gptr->next = NULL;
-  }
-  if (gptr->next == group && gptr->next->next != NULL){
-    gptr->next = gptr->next->next;
-  }
-
-  free(group);
-  group = NULL;
-  return group;
-}
-void removeGroups(Group* groups){
-  Group* gptr = groups;
-  Group* tmp = groups;
-  while (gptr->next){
-    if (gptr->next)
-      tmp = gptr->next;
-    free(gptr);
-    gptr = tmp;
-  }
-}
-/*
-void removeGroups(Board (*board)[BX]) {
-  for (int i = 0; i < BY; i++) {
-    for (int j = 0; j < BX; j++) {
-      if (board[i][j].group != NULL) {
-        //        mvwprintw(win, i, j, "removing: %d %d\n", i, j);
-        free(board[i][j].group);
-        board[i][j].group = NULL;
-      }
-    }
-  }
-}
-*/

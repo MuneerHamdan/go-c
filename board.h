@@ -26,14 +26,12 @@ typedef struct Stone {
 
   struct Group* group;
   struct Stone* next;
-
-  struct Stone* up;
-  struct Stone* left;
-  struct Stone* right;
-  struct Stone* down;
 } Stone;
 
 typedef struct Group {
+  Vec2i cpos;
+  Vec2i bpos;
+
   Stone* stonehead;
   int liberties;
   struct Group* next;
@@ -43,19 +41,19 @@ typedef struct Group {
 typedef struct Board {
   char c;
   Stone* stone;
-  Group* group;
 } Board;
 
-Stone* makeStone(char c, Vec2i cpos, Vec2i bpos);
-Group* addGroup(Group* groups, Group* group);
-Group* findGroup(Board (*board)[BX], Stone* stone);
-Group* makeGroup(Board (*board)[BX], Stone* stone);
-void placeStone(Board (*board)[BX], Stone* stone);
-void findDead(Board (*board)[BX]);
-Stone* removeStone(Board (*board)[BX], int bposy, int bposx);
-void removeStones(Board (*board)[BX]);
-Group* removeStonesGroup(Board (*board)[BX], Group* group);
-void removeGroups(Group* groups);
-Group* removeGroup(Board (*board)[BX], Group* groups, Group* group);
+Stone* makeStone(Board (*board)[BX], char c, Vec2i cpos, Vec2i bpos);
+Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups);
+//Group* addStoneToGroup(Stone* stone, Stone* stone_, Group* groups);
+
+Group* makeGroup(Stone* stone, Group* groups);
+Group* addGroupToGroups(Group* group, Group* groups);
+
+Stone* removeStone(Board (*board)[BX], Group* groups, Stone* stone);
+Group* removeStones(Group* group);
+
+Group* removeGroup(Group* groups, Group* group);
+Group* removeGroups(Group* groups);
 
 #endif
