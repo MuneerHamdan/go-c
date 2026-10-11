@@ -1,4 +1,5 @@
 #include <signal.h>
+#include "linkedlist.h"
 #include <ncurses.h>
 #include <errno.h>
 #include "main.h"
@@ -104,8 +105,10 @@ int main(void) {
         turn--;
       }
       stone = makeStone(board, c, (Vec2i){cursy, cursx}, (Vec2i){bposy, bposx});
-      groups = neighborGroup(board, stone, groups);
-      group = addStoneToGroup(groups, stone);
+      group = neighborGroup(board, stone, groups);
+      stone = addStoneToGroup(group, stone);
+      groups = addGroupToGroups(group, groups);
+ //     groups = addGroup(groups, group);
       //updateGroups(groups, board);
     }
     else if (ch == 'r' && stone) {

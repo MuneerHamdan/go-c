@@ -28,8 +28,7 @@ Group* makeGroup(Board (*board)[BX], Stone* stone, Group* groups){
 
   board[stone->bpos.y][stone->bpos.x].group = group;
 
-  groups = addGroupToGroups(stone->group, groups);
-  return groups;
+  return group;
 }
 
 Group* getGroup(Stone* stonehead){
@@ -51,12 +50,18 @@ Group* addGroupToGroups(Group* group, Group* groups){
     return groups;
   }
   while (ptr->next){
+    if(ptr == group)
+      return groups;
     prev = ptr;
     ptr = ptr->next;
   }
-  ptr->prev = prev;
-  ptr->next = group;
-  group->prev = ptr;
+  if(ptr == group)
+    return groups;
+  if(!(ptr->next)){
+    ptr->prev = prev;
+    ptr->next = group;
+    group->prev = ptr;
+  }
   return groups;
 }
 
@@ -110,14 +115,19 @@ Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups){
   return stone->group;
 }
 
-Group* addStoneToGroup(Group* group, Stone* stone){
+Stone* addStoneToGroup(Group* group, Stone* stone){
   Stone* ptr = group->stonehead;
   while(ptr->next){
     ptr = ptr->next;
   }
+  if(stone == group->stonehead){
+    stone->prev = NULL;
+    stone->next = NULL;
+    return stone;
+  }
   stone->prev = ptr;
   ptr->next = stone;
-  return group;
+  return stone;
 }
 
 Stone* removeStone(Board (*board)[BX], Group* group, Stone* stone){
@@ -129,6 +139,10 @@ Stone* removeStone(Board (*board)[BX], Group* group, Stone* stone){
 }
 Group* removeStones(Board (*board)[BX], Group* group){
   Stone* ptr = group->stonehead;
+  if (!(ptr->next)){
+    ptr = removeStone(board, group, ptr);
+    return group;
+  }
   while (ptr){
     while (ptr->next){
       ptr = removeStone(board, group, ptr);

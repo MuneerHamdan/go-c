@@ -48,7 +48,7 @@ typedef struct Board {
 
 Stone* makeStone(Board (*board)[BX], char c, Vec2i cpos, Vec2i bpos);
 Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups);
-Group* addStoneToGroup(Group* group, Stone* stone);
+Stone* addStoneToGroup(Group* group, Stone* stone);
 
 Group* getGroup(Stone* stonehead);
 Group* makeGroup(Board (*board)[BX], Stone* stone, Group* groups);
