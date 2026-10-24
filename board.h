@@ -51,14 +51,14 @@ Group* neighborGroup(Board (*board)[BX], Stone* stone, Group* groups);
 Stone* addStoneToGroup(Group* group, Stone* stone);
 
 Group* getGroup(Stone* stonehead);
-Group* makeGroup(Board (*board)[BX], Stone* stone, Group* groups);
+Group* makeGroup(Board (*board)[BX], Stone* stone);
 Group* addGroupToGroups(Group* group, Group* groups);
+//Group* updateGroups(Group* groups, Board (*board)[BX]);
 
 Stone* removeStone(Board (*board)[BX], Group* group, Stone* stone);
 Group* removeStones(Board (*board)[BX], Group* group);
 
-Group* removeGroup(Board (*board)[BX], Group* groups, Vec2i bpos);
-Group* removeGroupLL(Board (*board)[BX], Group* groups, Group* group);
+Group* removeGroup(Board (*board)[BX], Group* groups, Group* group);
 Group* removeGroups(Board (*board)[BX], Group* groups);
 
 #endif

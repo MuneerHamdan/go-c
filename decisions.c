@@ -6,14 +6,24 @@ int getLiberties(Board (*board)[BX], Stone* stone) {
   if (stone == NULL)
     return 0;
   stone->liberties = 4;
-//  if (board[stone->bpos.y][stone->bpos.x-1].stone != NULL || (stone->bpos.x-1) < 0 || (stone->bpos.x-1) >= BX)
-//    stone->liberties--;
-//  if (board[stone->bpos.y][stone->bpos.x+1].stone != NULL || (stone->bpos.x+1) < 0 || (stone->bpos.x+1) >= BX)
-//    stone->liberties--;
-//  if (board[stone->bpos.y-1][stone->bpos.x].stone != NULL || (stone->bpos.y-1) < 0 || (stone->bpos.y-1) >= BY)
-//    stone->liberties--;
-//  if (board[stone->bpos.y+1][stone->bpos.x].stone != NULL || (stone->bpos.y+1) < 0 || (stone->bpos.y+1) >= BY)
-//    stone->liberties--;
+  stone->group->liberties = 4;
+  if (board[stone->bpos.y][stone->bpos.x-1].stone != NULL || (stone->bpos.x-1) < 0 || (stone->bpos.x-1) >= BX){
+    stone->liberties--;
+    stone->group->liberties--;
+  }
+  if (board[stone->bpos.y][stone->bpos.x+1].stone != NULL || (stone->bpos.x+1) < 0 || (stone->bpos.x+1) >= BX){
+    stone->liberties--;
+    stone->group->liberties--;
+  }
+  if (board[stone->bpos.y-1][stone->bpos.x].stone != NULL || (stone->bpos.y-1) < 0 || (stone->bpos.y-1) >= BY){
+    stone->liberties--;
+    stone->group->liberties--;
+  }
+  if (board[stone->bpos.y+1][stone->bpos.x].stone != NULL || (stone->bpos.y+1) < 0 || (stone->bpos.y+1) >= BY){
+    stone->liberties--;
+    stone->group->liberties--;
+  }
 
   return stone->liberties;
 }
+

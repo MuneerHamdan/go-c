@@ -1,5 +1,7 @@
 #include <signal.h>
 #include "linkedlist.h"
+#include "decisions.h"
+#include <stdlib.h>
 #include <ncurses.h>
 #include <errno.h>
 #include "main.h"
@@ -29,7 +31,6 @@ int main(void) {
   errno = keypad(win, TRUE);
   if (errno)
     fprintf(stderr, "error keypad%d\n", errno);
-
 
   char turn = 0;
 
@@ -109,11 +110,12 @@ int main(void) {
       stone = addStoneToGroup(group, stone);
       groups = addGroupToGroups(group, groups);
  //     groups = addGroup(groups, group);
-      //updateGroups(groups, board);
+      updateGroups(groups, board);
     }
     else if (ch == 'r' && stone) {
-      stone = removeStone(board, groups, stone);
-      group = removeGroup(board, groups, (Vec2i){bposy, bposx});
+      group = removeGroup(board, groups, group);
+      stone = NULL;
+      group = NULL;
 //      board[bposy][bposx].group = removeGroup(board, groups, board[bposy][bposx].group);
  //     board[bposy][bposx].stone = removeStone(board, bposy, bposx);
     }
@@ -134,7 +136,7 @@ int main(void) {
     mvwprintw(win, 1, 0, "bpos: %d, %d", bposy, bposx);
     mvwprintw(win, 2, 0, "turn: %c", turn ? '@' : 'O');
     mvwprintw(win, 3, 0, "stone?: %c", (stone) ? 'y' : 'n');
-    mvwprintw(win, 4, 0, "liberties: %d", (stone) ? (stone->liberties) : 0);
+    mvwprintw(win, 4, 0, "liberties: %d", (stone) ? getLiberties(board, stone) : 0);
     //mvwprintw(win, 4, 0, "liberties: %d", (stone) ? getLiberties(board, board[bposy][bposx].stone) : 0);
     mvwprintw(win, 5, 0, "stone->cpos.y: %d, stone->cpos.x: %d", (stone) ? stone->cpos.y : -1, (stone) ? stone->cpos.x : -1);
     mvwprintw(win, 6, 0, "stone->bpos.y: %d, stone->bpos.x: %d", (stone) ? stone->bpos.y : -1, (stone) ? stone->bpos.x : -1);
@@ -165,7 +167,7 @@ int main(void) {
  //     mvwprintw(win, 20, 0, "groups: %p", (groups) ? (void *)groups : NULL);
 //      mvwprintw(win, 21, 0, "groups->next: %p", (groups && groups->next) ? (void *)groups->next : NULL);
 //      }
-//      mvwprintw(win, 21, 0, "group->liberties: %d", board[bposy][bposx].group->liberties);
+      mvwprintw(win, 22, 0, "group->liberties: %d", (board[bposy][bposx].group) ? board[bposy][bposx].group->liberties : 0);
 //    }
 //    mvwprintw(win, 22, 0, "stone->next: %p", (board[bposy][bposx].stone && board[bposy][bposx].stone->next) ? (void *)(board[bposy][bposx].stone->next) : NULL);
 //
@@ -222,7 +224,13 @@ int main(void) {
 
   //remove all stones
 //  removeStones(board);
-  removeGroups(board, groups);
+  groups = removeGroups(board, groups);
+  if(groups){
+    if(groups->stonehead){
+      free(groups->stonehead);
+    }
+    free(groups);
+  }
 
   endwin();
   return 0;
