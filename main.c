@@ -110,10 +110,11 @@ int main(void) {
       stone = addStoneToGroup(group, stone);
       groups = addGroupToGroups(group, groups);
  //     groups = addGroup(groups, group);
-      updateGroups(groups, board);
+      groups = updateGroups(groups, board);
+      groups = findDead(groups, board);
     }
     else if (ch == 'r' && stone) {
-      group = removeGroup(board, groups, group);
+      removeGroup(board, groups, group);
       stone = NULL;
       group = NULL;
 //      board[bposy][bposx].group = removeGroup(board, groups, board[bposy][bposx].group);
@@ -167,7 +168,7 @@ int main(void) {
  //     mvwprintw(win, 20, 0, "groups: %p", (groups) ? (void *)groups : NULL);
 //      mvwprintw(win, 21, 0, "groups->next: %p", (groups && groups->next) ? (void *)groups->next : NULL);
 //      }
-      mvwprintw(win, 22, 0, "group->liberties: %d", (board[bposy][bposx].group) ? board[bposy][bposx].group->liberties : 0);
+      mvwprintw(win, 22, 0, "group->liberties: %d", (board[bposy][bposx].stone && board[bposy][bposx].stone->group) ? board[bposy][bposx].stone->group->liberties : 0);
 //    }
 //    mvwprintw(win, 22, 0, "stone->next: %p", (board[bposy][bposx].stone && board[bposy][bposx].stone->next) ? (void *)(board[bposy][bposx].stone->next) : NULL);
 //

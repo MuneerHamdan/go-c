@@ -35,7 +35,7 @@ Group* addGroup(Group* groups, Group* group){
 Group* updateGroupLiberties(Group* group, Board (*board)[BX]){
   Stone* ptr = group->stonehead;
   group->liberties = 0;
-  while (ptr != NULL){
+  while (ptr){
     ptr->liberties = getLiberties(board, ptr);
 //    updateLiberties(board);
     group->liberties += ptr->liberties;
@@ -54,32 +54,29 @@ Group* updateGroupLiberties(Group* group, Board (*board)[BX]){
   }
   return group;
 }
-void updateGroups(Group* groups, Board (*board)[BX]){
+Group* updateGroups(Group* groups, Board (*board)[BX]){
   Group* gptr = groups;
-  while (gptr != NULL){
-    gptr->liberties = updateGroupLiberties(gptr, board)->liberties;
+  while (gptr){
+    gptr = updateGroupLiberties(gptr, board);
+    gptr = gptr->next;
+  }
+  return groups;
+}
+Group* findDead(Group* groups, Board (*board)[BX]){
+  Group* gptr = groups;
+  while(gptr){
     if (!(gptr->liberties)){ // group is dead
       Group* tmp = NULL;
+
       if (gptr->next){
         tmp = gptr->next;
       }
       gptr = removeGroup(board, groups, gptr);
+      groups = updateGroups(groups, board);
       if (!gptr)
         gptr = tmp;
     }
-    /*
-      if (gptr->prev){
-        if (gptr->next){
-          Group* tmp = gptr->next;
-        }
-      }
-      else if (gptr->next){
-        Group* tmp = gptr->next;
-        gptr = removeGroup(board, groups, gptr);
-        gptr->next = NULL;
-      }
-    }
-    */
     gptr = gptr->next;
   }
+  return groups;
 }
